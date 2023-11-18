@@ -19,7 +19,7 @@ export class UserEntity {
     if (!id && !_id) throw CustomError.badRequest("Id is required");
     if (!name) throw CustomError.badRequest("Name is required");
     if (!email) throw CustomError.badRequest("Email is required");
-    if (!emailValided) throw CustomError.badRequest("EmailValided is required");
+    if (emailValided=== undefined ) throw CustomError.badRequest("EmailValided is required");
     if (!password) throw CustomError.badRequest("Password is required");
     if (!role) throw CustomError.badRequest("Role is required");
 
