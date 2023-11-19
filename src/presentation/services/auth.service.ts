@@ -5,9 +5,14 @@ import { UserEntity } from '../../domain/entities/user.entity';
 import { LoginuserDto } from '../../domain/dtos/auth/login-user-dto';
 import { jwtAdapter } from '../../config/jwt.adapter';
 
+
 import { bcryptAdapter } from '../../config/bcrypt.adapter';
+import { EmailService } from './emai-service';
+import { envs } from '../../config/envs';
 export  class  AuthService {
-    constructor() {}
+    constructor(
+      private readonly emailService:EmailService,
+    ) {}
 
 
     public   async registerUser(registeruserDto:RegisteruserDto){
@@ -21,16 +26,18 @@ export  class  AuthService {
 
 
             await user.save()
+            await this.validateEmail(user.email)
+
             
             const {password,... userEntity}= UserEntity.fromObject(user)
 
-            const token= await jwtAdapter.generateToken({id:user.id})
+            const token= await jwtAdapter.generateToken({id:user.id,email:user.email})
             if (!token) throw CustomError.internalServerError("Error al generar el token")
-
+   
+   
             return {
                user : userEntity,
                token: token
-              
             }
 
         }catch(error){
@@ -58,4 +65,30 @@ export  class  AuthService {
             token: token
          }
         }
+
+
+    private  validateEmail= async(email:string)=>{
+
+      const token= await jwtAdapter.generateToken({email:email})
+      if (!token) throw CustomError.internalServerError("Error al generar el token")
+
+      const link=`${envs.MAILER_HOST}/auth/validate-email/${token}`
+      const   html = ` 
+      <h1>Valida tu cuenta</h1>
+      <p>Para validar tu cuenta has click en el siguiente link</p>
+      <a href="${link}">Validar cuenta : ${email}</a>
+      
+      `
+
+      const mailOptions = {
+        to: email,
+        subject: 'Validar cuenta',
+        htmlBody: html
+      };
+     const issend= await this.emailService.sendEmail(mailOptions) 
+      if(!issend) throw CustomError.internalServerError("Error al enviar el correo")
+
+      return true
+
+    }
 }

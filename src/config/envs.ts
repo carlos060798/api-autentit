@@ -5,6 +5,9 @@ import { get } from 'env-var';
 /**
  * Configuration object for environment variables.
  */
+/**
+ * Configuration object for environment variables.
+ */
 export const envs = {
   /**
    * The port number for the server.
@@ -25,6 +28,26 @@ export const envs = {
    * The secret key for JSON Web Tokens.
    */
   JWT_SECRET: get('JWT_SECRET').required().asString(),
+
+  /**
+   * The mailer service.
+   */
+  MAILER_SERVICE: get('MAILER_SERVICE').required().asString(),
+
+  /**
+   * The email address for the mailer.
+   */
+  MAILER_EMAIL: get('MAILER_EMAIL').required().asString(),
+
+  /**
+   * The secret key for the mailer.
+   */
+  MAILER_SECRET_KEY: get('MAILER_SECRET_KEY').required().asString(),
+
+  /**
+   * The host for the mailer.
+   */
+  MAILER_HOST: get('MAILER_HOST').required().asString(),
 }
 
 
