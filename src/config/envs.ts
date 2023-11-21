@@ -48,6 +48,9 @@ export const envs = {
    * The host for the mailer.
    */
   MAILER_HOST: get('MAILER_HOST').required().asString(),
+
+ 
+  SEND_EMAIL: get('SEND_EMAIL').default('false').asBool()
 }
 
 
