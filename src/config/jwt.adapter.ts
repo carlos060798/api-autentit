@@ -17,12 +17,17 @@ export class jwtAdapter{
 
   }
  
-    static validationToken(token: string): any{
+    /**
+     * Validates a JWT token and returns the decoded payload.
+     * @param token - The JWT token to be validated.
+     * @returns A Promise that resolves to the decoded payload if the token is valid, or null otherwise.
+     */
+    static validationToken<T>(token: string):Promise<T| null>{
        
       return new Promise((resolve)=>{
         jwt.verify(token,JwtKey,(err,decoded)=>{
           if(err) return resolve(null)
-          resolve(decoded)
+          resolve(decoded as T)
         })
       })
     }

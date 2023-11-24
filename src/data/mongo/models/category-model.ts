@@ -3,14 +3,17 @@ import mongoose, { Schema } from "mongoose";
  const categorySchema = new Schema({
   name:{
     type: String,
-    required: [true, "Name is required"]
-  },avilable:{
+    required: [true, "Name is required"],
+    unique: true,
+  },
+  available :{
     type: Boolean,
     default: true
-  },user:{
+  },
+  userid:{
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "User is required"]
+    required: true
   }
    
 
