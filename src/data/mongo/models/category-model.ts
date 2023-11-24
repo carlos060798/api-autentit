@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
- const categorySchema = new Schema({
+ const categorySchema = new mongoose.Schema({
   name:{
     type: String,
     required: [true, "Name is required"],
@@ -8,9 +8,9 @@ import mongoose, { Schema } from "mongoose";
   },
   available :{
     type: Boolean,
-    default: true
+    default: false
   },
-  userid:{
+  user:{
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true

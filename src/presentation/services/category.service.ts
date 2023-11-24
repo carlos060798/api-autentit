@@ -5,14 +5,13 @@ import { CustomError } from "../../domain";
 export class CategoryService {
   constructor() { }
   async createCategory(createCategoryDto: CreateCategoryDto, user: UserEntity) {
-    console.log("soy user  id:", user.id);
 
-    const categoryexist = await CategoryModel.create({ name: createCategoryDto.name });
-    if (!categoryexist) throw CustomError.badRequest(" Categoria ya existe ");
+    const categoryexist = await CategoryModel.findOne({ name: createCategoryDto.name });
+    if (categoryexist) throw CustomError.badRequest(" Categoria ya existe ");
     try {
       const category = new CategoryModel({
         ...createCategoryDto,
-        userid: user.id,
+        user: user.id,
       });
       console.log(category);
       await category.save();
