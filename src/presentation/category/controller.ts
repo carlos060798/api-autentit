@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { CustomError,  } from '../../domain';
 import { CreateCategoryDto } from '../../domain/dtos/category/category-dto';
 import { CategoryService } from '../../presentation/services/category.service';
+import { PaginationDto } from "../../domain/dtos/shared/pagination-dtos";
 
 
 
@@ -24,24 +25,31 @@ export class CategoryController {
     } 
 
     createCategory = (req: Request, res: Response) => {
-     console.log("soy body :",req.body)
     const [error,createCategoryDto]= CreateCategoryDto.create(req.body)
     if(error) return res.status(401).json(error)
     this.categoryService.createCategory(createCategoryDto!,req.body.user)
         .then((category) => res.status(201).json(category))
         .catch((error) => this.handleError(error, res))
-   
-   /*  res.json({
-         msg:"soy create category",
-         body:req.body
-     }) */
+     
+       
+
     }
 
     getCategories = (req: Request, res: Response) => {
-        res.json("get categories")
-    }
+        const  {page=1, limit=10}= req.query 
+        const [error,paginationDto]=PaginationDto.create(+page,+limit) // +page is the same as parseInt(page)
+        if(error) return res.status(400).json(error)
+
+
+           this.categoryService.getCategories(paginationDto!)
+            .then((categories) => res.status(200).json(categories))
+            .catch((error) => this.handleError(error, res))
+   
+        
+        }
 
     getCategory = (req: Request, res: Response) => {
+
         res.json("get category")
     }
 
