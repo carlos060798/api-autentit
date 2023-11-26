@@ -48,17 +48,6 @@ export class CategoryController {
         
         }
 
-    getCategory = (req: Request, res: Response) => {
-
-        res.json("get category")
-    }
-
-    updateCategory = (req: Request, res: Response) => {
-        res.json("update category")
-    }
-
-    deleteCategory = (req: Request, res: Response) => {
-        res.json("delete category")
-    }
+   
 
 }

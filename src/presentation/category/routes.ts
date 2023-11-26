@@ -9,6 +9,7 @@ export class CategoryRoutes {
         const router = Router();
         const categoryService = new CategoryService();
         const controller = new CategoryController(categoryService);
+        
         router.get('/', controller.getCategories)
         router.post('/',[AuthMiddlewere.validateJwtToken],controller.createCategory)
  
