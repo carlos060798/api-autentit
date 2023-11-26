@@ -10,7 +10,7 @@ export class ProductRoutes {
         const  productService= new ProductService();
         const  controller= new ProductController(productService);
         
-        router.get('/')
+        router.get('/',controller.getProducts)
         router.post('/',[AuthMiddlewere.validateJwtToken],controller.createProduct)
  
         return router;
