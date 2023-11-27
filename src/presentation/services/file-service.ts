@@ -1,9 +1,12 @@
 import { UploadedFile } from "express-fileupload";
 import path from "path";
 import fs from "fs";
+import { Uuid } from "../../config/uuid.adapter";
 
 export class FileService {
-  constructor() {}
+  constructor(
+    private readonly  uuid= Uuid.V4
+  ) {}
 
   private checkFolder(folderPath: string) { 
  
@@ -20,14 +23,25 @@ export class FileService {
   ) {
     try{
     
-    const fileExtension = file.mimetype.split("/").at(1); // remove extension
+    const fileExtension = file.mimetype.split("/").at(1) ?? ""; // remove extension
+   
+    if (!validRxtensions.includes(fileExtension)) {
+      throw new Error("Invalid file extension");
+    }
+   
+   
+   
     const destination= path.resolve(__dirname,`../../../`,folder);
     this.checkFolder(destination);
-    file.mv(destination + `/img-1.${fileExtension}`);
+    const fileName = `${this.uuid()}.${fileExtension}`;
+    file.mv(`${destination}/${fileName}`);
 
+
+    return {fileName}
 
     }catch(err){
       console.log(err);
+      throw err;
     }
 
 
