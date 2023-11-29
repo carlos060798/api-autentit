@@ -4,6 +4,7 @@ import { FileService } from "../services/file-service";
 import { UploadedFile } from "express-fileupload";
 import fileUpload from 'express-fileupload';
 import { Validators } from '../../config/validators';
+import { TypeMiddleware } from '../middleware/file-type-middleware';
 
 
 
@@ -37,12 +38,8 @@ export class FileController {
      */
  
     FileUpload = (req: Request, res: Response) => {
-        const type= req.params.type;
-        const ValidatorsType= ['users','products','categories'];
-
-        if (!ValidatorsType.includes(type)) return res.status(400).json({ msg: `The type ${type} is not valid` });
-        if (!req.files || Object.keys(req.files).length === 0)  return res.status(400).json({ msg: "No files were uploaded." });
         
+        const type= req.params.type;
         const file = req.body.files.at(0) as UploadedFile;
         this.fileService.uploadSingle(file, `uploads/${type}`)
         .then((upload) => {res.status(200).json({ msg: "File uploaded", upload })})
@@ -57,11 +54,6 @@ export class FileController {
      */
     FileUploadMultiple = (req: Request, res: Response) => {
         const type= req.params.type;
-        const ValidatorsType= ['users','products','categories'];
-
-        if (!ValidatorsType.includes(type)) return res.status(400).json({ msg: `The type ${type} is not valid` });
-        if (!req.files || Object.keys(req.files).length === 0)  return res.status(400).json({ msg: "No files were uploaded." });
-        
         const files = req.body.files as UploadedFile[];
         this.fileService.uploadMultiple(files, `uploads/${type}`)
         .then((upload) => {res.status(200).json({ msg: "File uploaded", upload })})

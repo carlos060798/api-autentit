@@ -6,6 +6,9 @@ import { UserEntity } from "../../domain/entities/user.entity";
 /**
  * Middleware for validating JWT token in the request header.
  */
+/**
+ * Middleware for validating JWT token in the request header.
+ */
 export class AuthMiddlewere {
   /**
    * Validates the JWT token in the request header.

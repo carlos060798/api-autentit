@@ -2,6 +2,7 @@ import { Router } from "express";
 import { FileService } from "../../presentation/services/file-service";
 import { FileController } from "../../presentation/file-upload/controller";
 import { FileUploadMiddleware } from "../../presentation/middleware/file-middleware";
+import { TypeMiddleware } from "../../presentation/middleware/file-type-middleware";
 
 export class FileRoutes {
     
@@ -17,9 +18,9 @@ export class FileRoutes {
         router.post('/single/:type',controller.FileUpload);
 
        // carga de archivos multiples
-        router.post('/multiple/:type',controller.FileUploadMultiple);
+        router.post('/multiple/:type',[TypeMiddleware.validateType(['users','products','categories'])],controller.FileUploadMultiple);
          
- 
+        // mostrar imagen
         return router;
     }
 
