@@ -4,58 +4,67 @@ import fs from "fs";
 import { Uuid } from "../../config/uuid.adapter";
 
 export class FileService {
+  
   constructor(
     private readonly  uuid= Uuid.V4
   ) {}
 
-  private checkFolder(folderPath: string) { 
- 
-  if(!fs.existsSync(folderPath)){
-    fs.mkdirSync(folderPath);
+  
+  private checkFolder( folderPath: string ) {
+    if ( !fs.existsSync(folderPath) ) {
+      fs.mkdirSync(folderPath);
+    }
+  }
 
 
-  }}
-
-  async uploadFile(
+  async uploadSingle(
     file: UploadedFile,
-    folder: string = "uploads",
-    validRxtensions: string[] = ["png", "jpg", "gif", "jpeg"]
+    folder: string = 'uploads',
+    validExtensions: string[] = ['png','gif', 'jpg','jpeg']
   ) {
-    try{
-    
-    const fileExtension = file.mimetype.split("/").at(1) ?? ""; // remove extension
-   
-    if (!validRxtensions.includes(fileExtension)) {
-      throw new Error("Invalid file extension");
+
+    try {
+      
+      const fileExtension = file.mimetype.split('/').at(1) ?? '';
+      if ( !validExtensions.includes(fileExtension) ) {
+        throw  Error(`Invalid extension: ${ fileExtension }, valid ones ${ validExtensions }`);
+      }
+
+      const destination = path.resolve( __dirname, '../../../', folder );
+      this.checkFolder( destination );
+
+      const fileName = `${ this.uuid() }.${ fileExtension }`;
+
+      file.mv(`${destination}/${ fileName }`);
+
+      return { fileName };
+
+    } catch (error) {
+      
+      // console.log({error});
+      throw error;
+
     }
-   
-   
-   
-    const destination= path.resolve(__dirname,`../../../`,folder);
-    this.checkFolder(destination);
-    const fileName = `${this.uuid()}.${fileExtension}`;
-    file.mv(`${destination}/${fileName}`);
-
-
-    return {fileName}
-
-    }catch(err){
-      console.log(err);
-      throw err;
-    }
-
-
-
 
 
 
   }
 
-  async  uploadFiles(
-    file: UploadedFile[],
-    fileName: string = "uploads",
-    validRxtensions: string[] = ["png", "jpg", "gif", "jpeg"]
+  async uploadMultiple(
+    files: UploadedFile[],
+    folder: string = 'uploads',
+    validExtensions: string[] = ['png','jpg','jpeg','gif']
   ) {
-    throw new Error("Not implemented yet");
+
+    const fileNames = await Promise.all(
+      files.map( file => this.uploadSingle(file, folder, validExtensions) )
+    );
+   
+    return fileNames;
+
   }
+
+
+
+   
 }

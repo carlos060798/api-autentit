@@ -3,6 +3,7 @@ import { CustomError, } from '../../domain';
 import { FileService } from "../services/file-service";
 import { UploadedFile } from "express-fileupload";
 import fileUpload from 'express-fileupload';
+import { Validators } from '../../config/validators';
 
 
 
@@ -26,7 +27,7 @@ export class FileController {
         }
         console.log(`${error}`)
 
-        res.status(500).json({ msg: "Error interno" })
+        res.status(500).json({ msg: "Error interno" ,error: error })
     }
 
     /**
@@ -36,17 +37,18 @@ export class FileController {
      */
  
     FileUpload = (req: Request, res: Response) => {
-        const files = req.files;
-        if (!req.files || Object.keys(req.files).length === 0) {
-            return res.status(400).json({ msg: "No files were uploaded." });
-        }
-        const file = req.files.file as UploadedFile;
-        this.fileService.uploadFile(file).then((upload) => {
-            res.status(200).json({ msg: "File uploaded", upload })
-        }).catch((error) => {
-            this.handleError(error, res);
-        })
+        const type= req.params.type;
+        const ValidatorsType= ['users','products','categories'];
+
+        if (!ValidatorsType.includes(type)) return res.status(400).json({ msg: `The type ${type} is not valid` });
+        if (!req.files || Object.keys(req.files).length === 0)  return res.status(400).json({ msg: "No files were uploaded." });
+        
+        const file = req.body.files.at(0) as UploadedFile;
+        this.fileService.uploadSingle(file, `uploads/${type}`)
+        .then((upload) => {res.status(200).json({ msg: "File uploaded", upload })})
+        .catch((error) => {  this.handleError(error, res);})
     }
+
 
     /**
      * Handles multiple file upload operation.
@@ -54,6 +56,18 @@ export class FileController {
      * @param res - The response object.
      */
     FileUploadMultiple = (req: Request, res: Response) => {
-        res.status(200).json({ msg: "File downloadedss" })
+        const type= req.params.type;
+        const ValidatorsType= ['users','products','categories'];
+
+        if (!ValidatorsType.includes(type)) return res.status(400).json({ msg: `The type ${type} is not valid` });
+        if (!req.files || Object.keys(req.files).length === 0)  return res.status(400).json({ msg: "No files were uploaded." });
+        
+        const files = req.body.files as UploadedFile[];
+        this.fileService.uploadMultiple(files, `uploads/${type}`)
+        .then((upload) => {res.status(200).json({ msg: "File uploaded", upload })})
+        .catch((error) => {  this.handleError(error, res);})
+
+
+
     }
 }
